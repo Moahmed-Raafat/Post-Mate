@@ -1,0 +1,13 @@
+<resources>
+    <string name="app_name">Post Mate</string>
+
+    <string name="posts">Posts</string>
+    <string name="post_details">Post Details</string>
+    <string name="see_more">See More</string>
+    <string name="comments">Comments</string>
+    <string name="favorites">Favorites</string>
+    <string name="off_line">Offline Mode</string>
+    <string name="title">Title</string>
+    <string name="body">Body</string>
+
+</resources>
