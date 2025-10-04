@@ -132,7 +132,7 @@ fun BottomSheet() {
                     val id = backStackEntry.arguments?.getInt("id") ?: -1
                     val title = backStackEntry.arguments?.getString("title") ?: ""
                     val body = backStackEntry.arguments?.getString("body") ?: ""
-                    PostDetails(userId, id, title, body)
+                    PostDetails(userId, id, title, body, navController)
                 }
             }
 

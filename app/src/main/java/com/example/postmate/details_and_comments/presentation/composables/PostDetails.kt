@@ -1,7 +1,10 @@
 package com.example.postmate.details_and_comments.presentation.composables
 
 import android.annotation.SuppressLint
+import android.graphics.Paint
+import android.graphics.Typeface
 import android.widget.Toast
+import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -9,21 +12,27 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
@@ -37,6 +46,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.nativeCanvas
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
@@ -45,6 +55,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
 import com.example.postmate.R
 import com.example.postmate.common.Constants
 import com.example.postmate.details_and_comments.data.remote.CommentModelClass
@@ -63,6 +74,7 @@ fun PostDetails(userId: Int,
                 id: Int,
                 title: String,
                 body: String,
+                navController: NavController,
                 commentsViewModel: CommentsViewModel = koinViewModel(),
                 getFavoriteByIdViewModel: GetFavouriteByIdViewModel = koinViewModel(),
                 insertFavoriteViewModel: InsertFavoriteViewModel = koinViewModel(),
@@ -106,29 +118,52 @@ fun PostDetails(userId: Int,
     Column (
         modifier = Modifier.fillMaxSize().background(color = colorResource( R.color.background)))
     {
-        TopAppBar(
-            modifier = Modifier.height(60.dp),
-            title= {
-                Text(
-                    text= stringResource(R.string.post_details),
-                    fontWeight = FontWeight.Bold,
-                    color = colorResource(R.color.white),
-                    modifier = Modifier.fillMaxWidth(),
-                    textAlign = TextAlign.Center)
+        CenterAlignedTopAppBar(
+            title = {
+                Box(
+                    modifier = Modifier.fillMaxSize(),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text(
+                        text = stringResource(R.string.post_details),
+                        fontWeight = FontWeight.Bold,
+                        color = colorResource(R.color.white),
+                        textAlign = TextAlign.Center,
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                }
             },
             colors = TopAppBarDefaults.topAppBarColors(
                 containerColor = colorResource(R.color.primary),
                 titleContentColor = colorResource(R.color.white)
-            )
+            ),
+            navigationIcon = {
+                IconButton(
+                    onClick = { navController.popBackStack() },
+                    modifier = Modifier.size(48.dp)
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.ArrowBack,
+                        contentDescription = "back",
+                        tint = colorResource(R.color.white)
+                    )
+                }
+            },
+            actions = {
+                // Add an invisible spacer to balance the navigation icon
+                Spacer(modifier = Modifier.size(48.dp))
+            },
+            modifier = Modifier.height(50.dp)
         )
-        Column(modifier = Modifier.padding(10.dp).fillMaxSize()) {
+        Column(modifier = Modifier.padding(10.dp).fillMaxSize())
+        {
 
             Row (modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End){
 
                 Icon(
                     Icons.Default.Favorite ,
                     contentDescription = stringResource(R.string.posts),
-                    modifier = Modifier.size(26.dp).clickable{
+                    modifier = Modifier.size(35.dp).clickable{
                         if(isFavorite)
                         {
                             deleteFavoriteViewModel.deleteFavorite(
@@ -162,35 +197,31 @@ fun PostDetails(userId: Int,
 
             //title
             Text(
-                text = stringResource(R.string.title),
-                color = colorResource(R.color.text),
-                fontSize = 20.sp,
-                fontWeight = FontWeight.Bold
-            )
-            Spacer(Modifier.height(5.dp))
-            Text(
                 text = title,
-                color = colorResource(R.color.secondary),
-                fontSize = 15.sp,
-                modifier = Modifier.padding(horizontal = 10.dp)
+                color = colorResource(R.color.text),
+                fontSize = 25.sp,
+                modifier = Modifier.padding(horizontal = 10.dp),
+                fontWeight = FontWeight.Bold
+
             )
 
-            Spacer(Modifier.height(10.dp))
+            Spacer(Modifier.height(15.dp))
 
             //body
-            Text(
-                text = stringResource(R.string.body),
-                color = colorResource(R.color.text),
-                fontSize = 20.sp,
-                fontWeight = FontWeight.Bold
-            )
-            Spacer(Modifier.height(5.dp))
-            Text(
-                text = body,
-                color = colorResource(R.color.secondary),
-                fontSize = 15.sp,
-                modifier = Modifier.padding(horizontal = 10.dp)
-            )
+            Card(
+                modifier = Modifier.fillMaxWidth().padding(horizontal = 5.dp),
+                shape = RoundedCornerShape(10.dp),
+                colors = CardDefaults.cardColors(containerColor = colorResource(R.color.surface_card)),
+                elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
+            ) {
+                Column(modifier = Modifier.padding(12.dp)) {
+                    Text(
+                        text = body,
+                        color = colorResource(R.color.text),
+                        fontSize = 15.sp)
+                }
+            }
+
 
             Spacer(Modifier.height(20.dp))
 
@@ -199,7 +230,8 @@ fun PostDetails(userId: Int,
                 text = stringResource(R.string.comments),
                 color = colorResource(R.color.text),
                 fontSize = 20.sp,
-                fontWeight = FontWeight.Bold
+                fontWeight = FontWeight.Bold,
+                modifier = Modifier.padding(horizontal = 10.dp)
             )
             Spacer(Modifier.height(5.dp))
             when {
@@ -245,34 +277,84 @@ fun commentItem(comment: CommentModelClass)
         colors = CardDefaults.cardColors(containerColor = colorResource(R.color.surface_card)),
         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
     ) {
-        Column(modifier = Modifier.padding(12.dp)) {
+        Row (modifier = Modifier.padding(12.dp))
+        {
+            Column(
+                modifier = Modifier.fillMaxHeight(),
+                verticalArrangement = Arrangement.Top)
+            {
+                CircleWithText(comment.email)
+            }
 
-            Text(
-                text = comment.name,
-                color = colorResource(R.color.secondary),
-                fontSize = 20.sp
-            )
+            Spacer(Modifier.width(8.dp))
 
-            Spacer(Modifier.height(8.dp))
+            Column(
+                modifier = Modifier.fillMaxHeight(),
+                verticalArrangement = Arrangement.Top)
+            {
+                Text(
+                    text = comment.name,
+                    color = colorResource(R.color.text),
+                    fontSize = 20.sp,
+                    fontWeight = FontWeight.Bold
 
-            Text(
-                text = comment.body,
-                color = colorResource(R.color.grey),
-                fontSize = 20.sp
-            )
+                )
 
-            Spacer(Modifier.height(8.dp))
+                Spacer(Modifier.height(8.dp))
 
-            Row(modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.End) {
+                Text(
+                    text = comment.body,
+                    color = colorResource(R.color.text),
+                    fontSize = 15.sp
+                )
+
+                Spacer(Modifier.height(8.dp))
+
                 Text(
                     text = comment.email,
                     color = colorResource(R.color.secondary),
                     fontSize = 15.sp,
                     fontStyle = FontStyle.Italic
                 )
+
             }
 
+
+
         }
+    }
+}
+
+@Composable
+fun CircleWithText(text: String) {
+    val colors = listOf(Color.Magenta, Color.Cyan, Color.Blue, Color.Magenta)
+    val circleColor = remember { colors.random() }
+    val char = text.firstOrNull()?.uppercaseChar() ?: ' '
+
+    Canvas(modifier = Modifier.size(50.dp)) {
+        val radius = size.minDimension / 2
+        drawCircle(
+            color = circleColor,
+            radius = radius,
+            center = center
+        )
+        val paint = Paint().apply {
+            color = android.graphics.Color.WHITE
+            textAlign = Paint.Align.CENTER
+            textSize = 60f
+            isAntiAlias = true
+            typeface = Typeface.create(Typeface.DEFAULT, Typeface.BOLD)
+        }
+
+        val fontMetrics = paint.fontMetrics
+        val textHeight = fontMetrics.descent - fontMetrics.ascent
+        val textOffset = textHeight / 2 - fontMetrics.descent
+
+        drawContext.canvas.nativeCanvas.drawText(
+            char.toString(),
+            center.x,
+            center.y + textOffset,
+            paint
+        )
     }
 }

@@ -20,6 +20,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -74,21 +75,24 @@ fun Favorites(
         modifier = Modifier.fillMaxSize().background(color = colorResource( R.color.background)))
     {
         TopAppBar(
-            modifier = Modifier.height(60.dp),
             title= {
-
-                Text(
-                    text= stringResource(R.string.favorites),
-                    fontWeight = FontWeight.Bold,
-                    color = colorResource(R.color.white),
-                    modifier = Modifier.fillMaxWidth(),
-                    textAlign = TextAlign.Center)
-
+                Box(
+                    modifier = Modifier.fillMaxSize(),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text(
+                        text= stringResource(R.string.favorites),
+                        fontWeight = FontWeight.Bold,
+                        color = colorResource(R.color.white),
+                        modifier = Modifier.fillMaxWidth(),
+                        textAlign = TextAlign.Center)
+                }
             },
             colors = TopAppBarDefaults.topAppBarColors(
                 containerColor = colorResource(R.color.primary),
                 titleContentColor = colorResource(R.color.white)
-            )
+            ),
+            modifier = Modifier.height(50.dp)
         )
 
         Column (modifier = Modifier.fillMaxSize(),

@@ -42,6 +42,16 @@ android {
     buildFeatures {
         compose = true
     }
+
+    packaging {
+        resources {
+            excludes += listOf(
+                "/META-INF/{AL2.0,LGPL2.1}",
+                "META-INF/LICENSE.md",
+                "META-INF/LICENSE-notice.md"
+            )
+        }
+    }
 }
 
 dependencies {
@@ -54,13 +64,39 @@ dependencies {
     implementation(libs.androidx.ui.graphics)
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
-    testImplementation(libs.junit)
-    androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
     androidTestImplementation(platform(libs.androidx.compose.bom))
     androidTestImplementation(libs.androidx.ui.test.junit4)
     debugImplementation(libs.androidx.ui.tooling)
-    debugImplementation(libs.androidx.ui.test.manifest)
+
+
+    // Local unit tests
+    testImplementation("junit:junit:4.13.2")
+    testImplementation("androidx.test:core:1.6.1")
+    testImplementation("androidx.arch.core:core-testing:2.2.0") // for LiveData and Room
+    testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.7.3")
+    testImplementation("com.google.truth:truth:1.1.3")
+    testImplementation("com.squareup.okhttp3:mockwebserver:4.12.0")
+    testImplementation("io.mockk:mockk:1.13.9") // newer, stable
+    testImplementation("io.insert-koin:koin-test:3.5.3") // Koin test utilities
+    testImplementation("androidx.room:room-testing:2.6.1") // Room in-memory DB tests
+    debugImplementation("androidx.compose.ui:ui-test-manifest:1.7.8")
+
+
+    // Instrumentation tests
+    androidTestImplementation("androidx.test.ext:junit:1.1.5")
+    androidTestImplementation("androidx.test:core-ktx:1.6.1")
+    androidTestImplementation("androidx.test:runner:1.5.2")
+    androidTestImplementation("androidx.arch.core:core-testing:2.2.0")
+    androidTestImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.7.3")
+    androidTestImplementation("com.google.truth:truth:1.1.3")
+    androidTestImplementation("com.squareup.okhttp3:mockwebserver:4.12.0")
+    androidTestImplementation("io.mockk:mockk-android:1.13.9")
+    androidTestImplementation("io.insert-koin:koin-test:3.5.0")
+    androidTestImplementation("androidx.room:room-testing:2.6.1")
+    androidTestImplementation("androidx.compose.ui:ui-test-junit4:1.7.8")
+    androidTestImplementation("io.insert-koin:koin-test-junit4:3.5.0")
+
 
     //icons
     implementation("androidx.compose.material:material-icons-extended:1.7.8")
@@ -74,7 +110,6 @@ dependencies {
     // Koin
     implementation ("io.insert-koin:koin-android:3.5.0")
     implementation ("io.insert-koin:koin-androidx-compose:3.5.0")
-    testImplementation ("io.insert-koin:koin-test-junit4:3.5.0")
 
 
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.3")

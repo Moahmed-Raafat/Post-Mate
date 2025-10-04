@@ -31,6 +31,7 @@ import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.OfflinePin
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -42,6 +43,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -49,6 +51,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.sp
 import com.example.postmate.R
+import com.example.postmate.common.Constants
 import com.example.postmate.posts.data.remote.PostModelClass
 import com.example.postmate.common.netwrork_and_internet.NetworkViewModel
 import com.example.postmate.navigation.Screens
@@ -107,21 +110,25 @@ fun Posts(navController: NavController,
         modifier = Modifier.fillMaxSize().background(color = colorResource( R.color.background)))
     {
         TopAppBar(
-            modifier = Modifier.height(60.dp),
             title= {
 
-                Text(
-                    text= stringResource(R.string.posts),
-                    fontWeight = FontWeight.Bold,
-                    color = colorResource(R.color.white),
-                    modifier = Modifier.fillMaxWidth(),
-                    textAlign = TextAlign.Center)
-
+                Box(
+                    modifier = Modifier.fillMaxSize(),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text(
+                        text= stringResource(R.string.posts),
+                        fontWeight = FontWeight.Bold,
+                        color = colorResource(R.color.white),
+                        modifier = Modifier.fillMaxWidth(),
+                        textAlign = TextAlign.Center)
+                }
             },
             colors = TopAppBarDefaults.topAppBarColors(
                 containerColor = colorResource(R.color.primary),
                 titleContentColor = colorResource(R.color.white)
-            )
+            ),
+            modifier = Modifier.height(50.dp)
         )
 
         Column (modifier = Modifier.fillMaxSize(),
@@ -146,6 +153,17 @@ fun Posts(navController: NavController,
 
                         //display posts
                         PostsList(posts = state.posts,navController)
+                    }
+                    state.posts.isEmpty() -> {
+                        //there are no posts in the room database
+                        Column(modifier = Modifier.fillMaxSize(),
+                            verticalArrangement = Arrangement.Center,
+                            horizontalAlignment = Alignment.CenterHorizontally) {
+                            Text(
+                                text = "No Posts Available",
+                                color = colorResource(R.color.text),
+                                modifier = Modifier.testTag(Constants.EMPTY_POSTS_LIST_FROM_API))
+                        }
                     }
                 }
             }
@@ -186,7 +204,10 @@ fun Posts(navController: NavController,
                         Column(modifier = Modifier.fillMaxSize(),
                             verticalArrangement = Arrangement.Center,
                             horizontalAlignment = Alignment.CenterHorizontally) {
-                            Text( text = "No Favorites Yet", color = colorResource(R.color.text))
+                            Text(
+                                text = "No Posts Available",
+                                color = colorResource(R.color.text),
+                                modifier = Modifier.testTag(Constants.EMPTY_POSTS_LIST_FROM_ROOM))
                         }
                     }
                 }
